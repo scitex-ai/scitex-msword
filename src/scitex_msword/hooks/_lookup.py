@@ -31,14 +31,15 @@ runtime callers can drop the cache via :func:`reset`.
 from __future__ import annotations
 
 import importlib.util
-import logging
 import sys
 from pathlib import Path
 from typing import Dict, Iterable, Optional
 
+import scitex_logging as slogging
+
 from ._base import Hook
 
-_logger = logging.getLogger(__name__)
+_logger = slogging.getLogger(__name__)
 _cache: Optional[Dict[str, Hook]] = None
 _PROJECT_LOCAL_DIR_PARTS = (".scitex", "msword", "hooks")
 

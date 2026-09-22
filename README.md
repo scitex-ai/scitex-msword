@@ -14,22 +14,17 @@
 
 <!-- scitex-badges:start -->
 <p align="center">
-  <a href="https://pypi.org/project/scitex-msword/"><img src="https://img.shields.io/pypi/v/scitex-msword.svg" alt="PyPI"></a>
-  <a href="https://pypi.org/project/scitex-msword/"><img src="https://img.shields.io/pypi/pyversions/scitex-msword.svg" alt="Python"></a>
-  <a href="https://github.com/ywatanabe1989/scitex-msword/actions/workflows/test.yml"><img src="https://github.com/ywatanabe1989/scitex-msword/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
-  <a href="https://codecov.io/gh/ywatanabe1989/scitex-msword"><img src="https://codecov.io/gh/ywatanabe1989/scitex-msword/graph/badge.svg" alt="Coverage"></a>
-  <a href="https://scitex-msword.readthedocs.io/en/latest/"><img src="https://readthedocs.org/projects/scitex-msword/badge/?version=latest" alt="Docs"></a>
-  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/license-AGPL_v3-blue.svg" alt="License: AGPL v3"></a>
+  <a href="https://pypi.org/project/scitex-msword/"><img src="https://img.shields.io/pypi/v/scitex-msword?label=pypi" alt="pypi"></a>
+  <a href="https://pypi.org/project/scitex-msword/"><img src="https://img.shields.io/pypi/pyversions/scitex-msword?label=python" alt="python"></a>
+  <a href="https://scitex-msword.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/scitex-msword?label=docs" alt="docs"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/ywatanabe1989/scitex-msword/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ywatanabe1989/scitex-msword/ci.yml?branch=develop&label=tests" alt="tests"></a>
+  <a href="https://codecov.io/gh/ywatanabe1989/scitex-msword"><img src="https://img.shields.io/codecov/c/github/ywatanabe1989/scitex-msword/develop?label=cov" alt="cov"></a>
 </p>
 <!-- scitex-badges:end -->
 
 ---
-
-## Installation
-
-```bash
-pip install scitex-msword
-```
 
 ## Quick Start
 
@@ -42,12 +37,78 @@ doc = sxm.load_docx("input.docx", profile="generic")
 # JSON-like document -> Word (apply a journal style)
 sxm.save_docx(doc, "output.docx", profile="mdpi-ijerph")
 
-# DOCX -> LaTeX (requires the umbrella `scitex` package for the .tex export step)
+# DOCX -> LaTeX (needs the [tex] extra for the .tex export step)
 sxm.convert_docx_to_tex(
     "manuscript.docx", "manuscript.tex",
     profile="resna-2025", image_dir="figures",
 )
 ```
+
+## Demo
+
+```mermaid
+flowchart LR
+    A[draft.docx] -->|load_docx| B[JSON-like doc]
+    B -->|save_docx<br/>profile=ieee| C[submission.docx]
+    B -->|convert_docx_to_tex| D[manuscript.tex]
+```
+
+<p align="center"><sub><b>Figure 1.</b> Round-trip: DOCX through a JSON-like intermediate, re-rendered with IEEE column widths, fonts, and heading numbering.</sub></p>
+
+```python
+import scitex_msword as sxm
+
+doc = sxm.load_docx("draft.docx", profile="generic")
+sxm.save_docx(doc, "submission.docx", profile="ieee")
+```
+
+Round-trips DOCX through a JSON-like intermediate, then re-renders with IEEE
+column widths, fonts, and heading numbering applied automatically.
+
+## Installation
+
+```bash
+uv pip install "scitex-msword[all]"
+```
+
+Requires Python >= 3.9.
+
+<details>
+<summary><b>Per-module extras</b></summary>
+
+<br>
+
+| Extra | Pulls in |
+|---|---|
+| `all` | `tex` + `mcp` (recommended) |
+| `tex` | scitex-tex (DOCX → LaTeX export) |
+| `mcp` | mcp SDK (MCP server) |
+| `dev` | pytest, pytest-cov, ruff + scitex-dev (contributors) |
+| `docs` | Sphinx + RTD theme + myst-parser (docs build only) |
+
+```bash
+uv pip install -e ".[dev]"   # editable install for contributors
+```
+
+</details>
+
+## Architecture
+
+```mermaid
+flowchart TD
+    pkg["scitex_msword"]
+    pkg --> load["_load<br/>load_docx:<br/>DOCX → JSON-like document"]
+    pkg --> save["_save<br/>save_docx:<br/>apply profile, write DOCX"]
+    pkg --> conv["_convert<br/>convert_docx_to_tex<br/>(lazy scitex_tex import)"]
+    pkg --> prof["profiles/<br/>generic, ieee, mdpi_ijerph,<br/>resna_2025, springer, elsevier"]
+    pkg --> help["helpers/<br/>caption-image linking,<br/>heading normalization"]
+    pkg --> reg["_registry<br/>register_profile<br/>for user styles"]
+    load --> doc[("JSON-like<br/>document")]
+    doc --> save
+    doc --> conv
+```
+
+<p align="center"><sub><b>Figure 2.</b> Document flow in scitex-msword: load once into a JSON-like intermediate, then render to styled DOCX or LaTeX.</sub></p>
 
 ## 1 Interfaces
 
@@ -132,7 +193,7 @@ doc.save("draft_v27.docx")
 ### MCP server (optional)
 
 ```bash
-pip install scitex-msword[mcp]
+uv pip install "scitex-msword[mcp]"
 python -m scitex_msword.mcp_server          # stdio transport
 ```
 
@@ -149,47 +210,10 @@ Tools exposed: `diff_docx_tool`, `mark_additions_tool`,
 
 ## Status
 
-Standalone fork of `scitex.msword`. Only runtime dep is `python-docx`. The
-umbrella `scitex.msword` import path is preserved via a `sys.modules`-alias
-bridge. `convert_docx_to_tex` lazily imports `scitex.tex`, so it works only
-when the umbrella package is also installed.
-
-## Architecture
-
-```
-scitex_msword/
-├── _load.py              ← `load_docx` — DOCX → JSON-like document
-├── _save.py              ← `save_docx` — apply profile, write DOCX
-├── _convert.py           ← `convert_docx_to_tex` (lazy scitex.tex import)
-├── profiles/             ← built-in journal styles
-│   ├── generic.py        ← default
-│   ├── ieee.py
-│   ├── mdpi_ijerph.py
-│   ├── resna_2025.py
-│   ├── springer.py
-│   └── elsevier.py
-├── helpers/              ← caption-image linking, heading normalization
-└── _registry.py          ← `register_profile` for user styles
-```
-
-## Demo
-
-```mermaid
-flowchart LR
-    A[draft.docx] -->|load_docx| B[JSON-like doc]
-    B -->|save_docx<br/>profile=ieee| C[submission.docx]
-    B -->|convert_docx_to_tex| D[manuscript.tex]
-```
-
-```python
-import scitex_msword as sxm
-
-doc = sxm.load_docx("draft.docx", profile="generic")
-sxm.save_docx(doc, "submission.docx", profile="ieee")
-```
-
-Round-trips DOCX through a JSON-like intermediate, then re-renders with IEEE
-column widths, fonts, and heading numbering applied automatically.
+Standalone fork of `scitex.msword`. Runtime deps: `python-docx`, `click`,
+`scitex-logging` (`scitex-tex` additionally for `convert_docx_to_tex` via
+the `[tex]` extra). The umbrella `scitex.msword` import path is preserved
+via a `sys.modules`-alias bridge.
 
 ## Part of SciTeX
 

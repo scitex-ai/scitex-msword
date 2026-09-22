@@ -22,10 +22,15 @@ classifiers = [
 dependencies = [
     "python-docx>=0.8.11",
     "click>=8.1",
+    # Declared because package source logs via scitex-logging (PS-220):
+    # hooks/_lookup.py binds a slogging logger at module import.
+    "scitex-logging",
 ]
 
 [project.optional-dependencies]
-tex = []
+tex = [
+    "scitex-tex",  # provides scitex_tex.export_tex for convert_docx_to_tex
+]
 # MCP server scaffold (priority 8 of the BOOST v16 dogfooding sprint).
 # The Anthropic MCP Python SDK is only needed when running
 # scitex_msword.mcp_server.serve(); the module imports successfully
@@ -38,6 +43,10 @@ dev = [
     "pytest-cov",
     "ruff",
     "scitex-dev>=0.11.7",
+    # PS-210 dev-extras-completeness: the [tex] extra's scitex-tex must also
+    # resolve under [dev] so a fresh `pip install -e .[dev]` runs the full
+    # suite (incl. the cross-package gate importing scitex_tex).
+    "scitex-tex",
 ]
 docs = [
     "sphinx>=7.0",
@@ -70,6 +79,10 @@ scitex-msword = "scitex_msword"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--disable-warnings"]
+markers = [
+    "smoke: fast subprocess CLI happy-path tests (<60s)",
+    "e2e: slow end-to-end workflows against real subsystems (RUN_E2E=1 to run)",
+]
 
 [tool.coverage.run]
 parallel = true

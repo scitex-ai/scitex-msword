@@ -1,16 +1,19 @@
+codecov:
+  require_ci_to_pass: false
+  # Treat develop as the de-facto default branch — main is a stable
+  # release mirror that only fast-forwards from develop, so develop
+  # is where coverage uploads land.
+  branch: develop
+
 coverage:
   status:
     project:
       default:
-        # Package is still ramping up coverage; allow auto baseline until
-        # the §0 subprocess-coverage push lands real numbers. Bump to 90%
-        # once `coverage report` from `.[dev]` clears that threshold.
-        target: auto
+        target: 90%
         threshold: 1%
     patch:
       default:
-        target: auto
-        threshold: 1%
+        target: 90%
 
 ignore:
   - "tests/**"
