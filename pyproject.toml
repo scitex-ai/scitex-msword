@@ -22,6 +22,9 @@ classifiers = [
 dependencies = [
     "python-docx>=0.8.11",
     "click>=8.1",
+    # Declared because package source logs via scitex-logging (PS-220):
+    # hooks/_lookup.py binds a slogging logger at module import.
+    "scitex-logging",
 ]
 
 [project.optional-dependencies]

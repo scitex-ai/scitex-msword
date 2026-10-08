@@ -41,6 +41,7 @@ import pytest
 
 # ===== AUTO-GENERATED: cross-package imports =====
 CROSS_PACKAGE_IMPORTS = [
+    'scitex_logging',
     'scitex_tex',
 ]
 # ===== END AUTO-GENERATED =====
@@ -52,6 +53,9 @@ def test_cross_package_import_exposes_module_attribute(module_name):
     # Arrange
     name = module_name
     # Act
-    module = pytest.importorskip(name)
+    # Skip on the ROOT so a renamed submodule fails loudly instead of
+    # being silently skipped; then hard-import the FULL path (PS-140).
+    pytest.importorskip(name.split(".")[0])
+    module = importlib.import_module(name)
     # Assert
     assert getattr(module, "__name__", "") == name
