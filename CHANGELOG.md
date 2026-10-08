@@ -7,6 +7,13 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-10-08
+
+Vendored shell completion as drop-in module (contract v1, PR #41):
+stdlib+click only, in-process script generation, atomic+idempotent
+drop-in write, never touches rc files. Pin `mcp>=1.0,<2` (scaffold
+imports the v1 `mcp.server.fastmcp` path; mcp 2.x renamed it).
+
 ## [0.3.2] - 2026-06-04
 
 Table insertion API + first CLI subcommand. Lifts the canonical
