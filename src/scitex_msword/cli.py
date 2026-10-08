@@ -128,17 +128,12 @@ _list_apis.register(main_group)
 _mcp.register(main_group)
 _skills.register(main_group)
 
-# §1a: install-shell-completion + print-shell-completion (canonical leaves)
-# Provided by the shared scitex-dev helper. If scitex-dev is not installed
-# (end-user runtime where it's not pulled in), silently skip — the audit
-# itself runs in the dev environment where scitex-dev IS available, so the
-# check fires there.
-try:
-    from scitex_dev._cli._completion import attach_shell_completion
+# §1a: install-shell-completion + print-shell-completion (canonical leaves).
+# Vendored drop-in module (``._cli._completion``): stdlib + click only, so
+# shell completion keeps working whether or not scitex-dev is installed.
+from ._cli._completion import attach_shell_completion
 
-    attach_shell_completion(main_group, prog_name="scitex-msword")
-except ImportError:
-    pass
+attach_shell_completion(main_group, prog_name="scitex-msword")
 
 
 # =========================================================================
