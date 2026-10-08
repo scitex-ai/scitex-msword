@@ -34,7 +34,10 @@ tex = []
 # scitex_msword.mcp_server.serve(); the module imports successfully
 # without it (raising a clear error only at server-startup time).
 mcp = [
-    "mcp>=1.0",
+    # Pinned below 2.x: the scaffold imports mcp.server.fastmcp (v1 API);
+    # mcp 2.x renamed FastMCP to MCPServer (owner call 2026-10-08, minimal
+    # reversible scope — migrate scaffold or lift pin deliberately later).
+    "mcp>=1.0,<2",
 ]
 dev = [
     "pytest",
