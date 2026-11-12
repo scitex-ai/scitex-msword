@@ -7,6 +7,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- Require the full `[all,dev]` profile in PR and post-merge tests; stop if installation fails.
+
 - Render DOCX-to-LaTeX conversion steps and caption-linking options as properly separated lists.
 
 ## [0.3.3] - 2026-10-08
