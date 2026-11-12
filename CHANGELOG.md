@@ -7,6 +7,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- Render DOCX-to-LaTeX conversion steps and caption-linking options as properly separated lists.
+
 ## [0.3.3] - 2026-10-08
 
 Vendored shell completion as drop-in module (contract v1, PR #41):

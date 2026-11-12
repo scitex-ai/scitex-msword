@@ -188,6 +188,7 @@ def convert_docx_to_tex(
     Convert a DOCX file directly to LaTeX.
 
     This is a convenience function that:
+
     1. Loads the DOCX file into SciTeX intermediate format
     2. (Optionally) normalizes headings
     3. (Optionally) links figure captions to images
@@ -212,6 +213,7 @@ def convert_docx_to_tex(
         LaTeX can generate \\includegraphics inside figure environments.
     link_mode : {"by-number", "by-proximity"}, default "by-number"
         Strategy for linking captions to images:
+
         - "by-number": Figure 1 -> first image, Figure 2 -> second image...
         - "by-proximity": assign images in document order, useful when
           figure numbers and image order don't match.
